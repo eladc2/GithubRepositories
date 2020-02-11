@@ -1,0 +1,195 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+   
+</div>
+
+<div class="row">
+    
+
+
+    <div id="root0" ng-app="myBookmarkList" ng-controller="myCtrl">
+        
+        <input ng-model="query">
+
+        <button id="btnGet" ng-click="Get()">Search</button>
+
+        <button id="btnGet2" ng-click="AllBookmarks()">Show All Bookmarks</button>
+
+        <p>
+
+        <ul id="ul0">
+            
+            <li ng-repeat="x in repositories">
+                <span>{{x.Name}}</span>
+                <img src="{{x.imagePath}}" />
+                <button ng-click="book($index)">bookmark</button>
+            </li>
+        </ul>
+
+        
+   
+    </div>
+
+   
+</div>
+
+<script>
+    
+    //send repositories to bookmarks window
+    function BroadcastBookmarks() {
+
+        var otherscope = newWindowRef.GetScope();
+
+        otherscope.$broadcast("INTER_WINDOW_DATA_TRANSFER", { someData: $("#root0").scope().repositories })
+
+       
+    }
+
+    var newWindowRef = null;
+
+    var app = angular.module("myBookmarkList", []);
+    app.controller("myCtrl", function ($scope) {
+        
+
+        $scope.repositories = [
+            { Name: '', imagePath: '../Content/pixel.png' }
+        ]
+
+        ///open all Bookmarks window
+        $scope.AllBookmarks = function () {
+        
+
+            var baseApp = window.location.href.substring(0, window.location.href.indexOf('Home'))
+
+
+            newWindowRef = window.open(baseApp + "/Home/Bookmarks", "New Window", "width=1280,height=890,resizable=1");
+            
+        }
+
+        ////get repositories
+        $scope.Get = function () {
+            
+
+            if (!$scope.query) {
+                alert('Please enter repository query');
+                return;
+            };
+
+            $.ajax({
+                
+                url: 'https://api.github.com/search/repositories?q=' + $scope.query,
+                //type: 'POST',
+                type: 'GET',
+                data: { 'roleId': '61AD3FD9-C080-4BB1-8012-2A25309B0AAF' },
+                dataType: 'json',
+                //processData: false,
+                //contentType: 'application/json; charset=utf-8',
+                //success: function (data) { SuccessRoleChangeHandler($scope, data); },
+
+                success: function (data) {
+                    $("#ul0").show();
+                    
+
+                    $scope.repositories.length = 0;
+
+                    $scope.$apply();
+
+                    
+                    var count = 0;
+
+                    var maxSize = data.items.length;
+
+                    if (maxSize > 20) maxSize = 20;
+
+
+                    for (var i = 0; i < maxSize; i++) {
+
+                        var newItem = { Name: data.items[i].name, imagePath: data.items[i].owner.avatar_url, booked: false };
+                        $scope.repositories.push(newItem);
+                       
+
+                        count += 1;
+                    }
+
+                    
+
+                    $scope.$apply();
+
+
+                   
+                },
+
+                error: OnFailRoleChangeHandler
+            });
+
+
+
+        }
+
+        ///bookmark a repository
+        $scope.book = function (x) {
+            $scope.errortext = "";
+         
+
+            $scope.repositories[x].booked = true;
+
+
+            $.ajax({
+                url: '@Url.Action("AddBook")',
+                
+                type: 'POST',
+                //type: 'GET',
+                //data: { 'Name': $scope.products[x].Name, 'imagePath': $scope.products[x].imagePath } ,
+                data: { 'obj': $scope.repositories[x] },
+                dataType: 'json',
+                //processData: false,
+                //contentType: 'application/json; charset=utf-8',
+                //success: function (data) { SuccessRoleChangeHandler($scope, data); },
+
+                success: function (data) {
+                  
+                },
+
+                error: OnFailRoleChangeHandler
+            });
+
+           
+
+        }
+
+    });
+
+    //////////////
+
+
+    $(document).ready(function () {
+
+       
+
+        $("#ul0").hide();
+
+        document.body.onkeydown = function (e) {
+        
+
+            if (e.keyCode == 13)
+            {
+               
+
+                $("#btnGet").click();
+            }
+        };
+
+
+    });
+
+        
+
+    function OnFailRoleChangeHandler(result) {
+        ///alert('in OnFailRoleChangeHandler');
+
+    }
+
+</script>
