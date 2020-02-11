@@ -11,7 +11,7 @@ One to two paragraph statement about your product and what it does.
 windows
 
 ```sh
-open GithubRepositories.csproj  and run
+open GithubRepositories.csproj with vs2017 or vs2019   and run
 ```
 
 Windows:
