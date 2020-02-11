@@ -1,9 +1,6 @@
 # Product Name
 > GithubRepositories
 
-[![NPM Version][npm-image]][npm-url]
-[![Build Status][travis-image]][travis-url]
-[![Downloads Stats][npm-downloads]][npm-url]
 
 One to two paragraph statement about your product and what it does.
 
@@ -14,13 +11,13 @@ One to two paragraph statement about your product and what it does.
 windows
 
 ```sh
-npm install my-crazy-module --save
+open GithubRepositories.csproj  and run
 ```
 
 Windows:
 
 ```sh
-edit autoexec.bat
+
 ```
 
 ## Usage example
